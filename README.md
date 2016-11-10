@@ -18,35 +18,7 @@ putting data to priority queue, and using this queue as source for result output
 
 ### As a library
 
-```java
-import com.futujaos.extsort.Extsort;
-import com.futujaos.extsort.Generator;
-
-import java.io.File;
-import java.io.IOException;
-
-public class Example {
-    public static void main(String[] args) {
-        final File sourceFile = new File("src.txt");
-        final File targetFile = new File("out.txt");
-
-        try {
-            new Generator(sourceFile).generate();
-        } catch (IOException e) {
-            System.err.println("Failed to generate source file");
-            e.printStackTrace();
-        }
-
-        final Extsort extsort = new Extsort(sourceFile, targetFile, true);
-        try {
-            extsort.sort();
-        } catch (IOException e) {
-            System.err.println("Failed to sort source file");
-            e.printStackTrace();
-        }
-    }
-}
-```
+See the [example](src/main/java/com/futujaos/extsort/Example.java)
 
 ### As a runnable
 
