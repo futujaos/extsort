@@ -37,7 +37,7 @@ public class Example {
             e.printStackTrace();
         }
 
-        final Extsort extsort = new Extsort(sourceFile, targetFile);
+        final Extsort extsort = new Extsort(sourceFile, targetFile, true);
         try {
             extsort.sort();
         } catch (IOException e) {

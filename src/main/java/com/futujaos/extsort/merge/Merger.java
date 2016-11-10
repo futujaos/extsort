@@ -1,13 +1,17 @@
 package com.futujaos.extsort.merge;
 
+import java.io.*;
+import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.futujaos.extsort.merge.impl.BufferedReaderChunk;
 import com.futujaos.extsort.merge.impl.BufferedWriterTarget;
 import com.futujaos.extsort.merge.impl.MergeLoggerImpl;
 
-import java.io.*;
-import java.util.*;
-
 public final class Merger {
+    private static final Logger logger = LogManager.getLogger();
     private final List<File> chunks;
     private final File targetFile;
     private final int logStep;
@@ -19,7 +23,7 @@ public final class Merger {
     }
 
     public void merge() throws IOException {
-        System.out.println("Joining " + chunks.size() + " chunks to target file...");
+        logger.info("Joining " + chunks.size() + " chunks to target file...");
 
         final List<BufferedReaderChunk> chunkReaders = new ArrayList<>(chunks.size());
         BufferedWriterTarget targetWriter = null;
@@ -45,12 +49,12 @@ public final class Merger {
             }
         }
 
-        System.out.println("Deleting chunks...");
+        logger.info("Deleting chunks...");
 
         for (File chunk : chunks) {
             final boolean deleted = chunk.delete();
             if (!deleted) {
-                System.err.println("Failed to delete chunk " + chunk.getName());
+                logger.error("Failed to delete chunk " + chunk.getName());
             }
         }
     }

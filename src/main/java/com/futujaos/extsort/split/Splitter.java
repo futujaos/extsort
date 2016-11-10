@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Splitter {
+    private static final Logger logger = LogManager.getLogger();
     private final File sourceFile;
     private final int maxNumbersInChunk;
 
@@ -15,7 +19,7 @@ public class Splitter {
     }
 
     public List<File> split() throws IOException {
-        System.out.println("Splitting source file to chunks...");
+        logger.info("Splitting source file to chunks...");
 
         final String chunkPrefix = "chunk_" + System.currentTimeMillis() + '_';
         final List<File> chunks = new ArrayList<>();
@@ -28,7 +32,7 @@ public class Splitter {
             String line = sourceReader.readLine();
             while (line != null) {
                 if (i == maxNumbersInChunk) {
-                    System.out.println("Writing " + array.length + " sorted numbers to chunk #" + chunks.size());
+                    logger.info("Writing " + array.length + " sorted numbers to chunk #" + chunks.size());
                     Arrays.sort(array);
                     final File currentChunk = chunks.get(chunks.size() - 1);
                     writeToChunk(currentChunk, array);
@@ -43,7 +47,7 @@ public class Splitter {
             }
 
             if (array.length != 0) {
-                System.out.println("Writing " + array.length + " sorted numbers to chunk #" + chunks.size());
+                logger.info("Writing " + array.length + " sorted numbers to chunk #" + chunks.size());
                 Arrays.sort(array);
                 final File currentChunk = chunks.get(chunks.size() - 1);
                 writeToChunk(currentChunk, array);

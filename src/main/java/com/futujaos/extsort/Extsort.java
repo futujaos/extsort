@@ -1,19 +1,28 @@
 package com.futujaos.extsort;
 
-import com.futujaos.extsort.merge.Merger;
-import com.futujaos.extsort.split.Splitter;
-
 import java.io.*;
 import java.util.*;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
+
+import com.futujaos.extsort.merge.Merger;
+import com.futujaos.extsort.split.Splitter;
+
 public class Extsort {
+    private static final Logger logger = LogManager.getLogger();
     private static final int DEFAULT_MAX_NUMBERS_IN_CHUNK = 1 << 24; // 16M
     private final File sourceFile;
     private final File targetFile;
 
-    public Extsort(File sourceFile, File targetFile) {
+    public Extsort(File sourceFile, File targetFile, boolean verbose) {
         this.sourceFile = sourceFile;
         this.targetFile = targetFile;
+        if (verbose) {
+            Configurator.setLevel("com.futujaos.extsort", Level.INFO);
+        }
     }
 
     public void sort() throws IOException {
@@ -23,7 +32,7 @@ public class Extsort {
         final Merger merger = new Merger(chunks, targetFile, DEFAULT_MAX_NUMBERS_IN_CHUNK);
         merger.merge();
 
-        System.out.println("Done!");
+        logger.info("Done!");
     }
 
     public static void main(String[] args) throws IOException {
@@ -49,6 +58,6 @@ public class Extsort {
 
         final File targetFile = new File(targetPath);
 
-        new Extsort(sourceFile, targetFile).sort();
+        new Extsort(sourceFile, targetFile, true).sort();
     }
 }

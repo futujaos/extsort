@@ -1,8 +1,12 @@
 package com.futujaos.extsort.merge.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.futujaos.extsort.merge.MergeLogger;
 
 public class MergeLoggerImpl implements MergeLogger {
+    private static final Logger logger = LogManager.getLogger();
     private final int logStep;
 
     public MergeLoggerImpl(int logStep) {
@@ -12,7 +16,7 @@ public class MergeLoggerImpl implements MergeLogger {
     @Override
     public void logIfNeeded(int elementsMerged) {
         if (elementsMerged % logStep == 0) {
-            System.out.println(elementsMerged + " numbers written to target file");
+            logger.info(elementsMerged + " numbers written to target file");
         }
     }
 }
