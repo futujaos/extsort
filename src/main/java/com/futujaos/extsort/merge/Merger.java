@@ -1,10 +1,61 @@
 package com.futujaos.extsort.merge;
 
+import com.futujaos.extsort.merge.impl.BufferedReaderChunk;
+import com.futujaos.extsort.merge.impl.BufferedWriterTarget;
+import com.futujaos.extsort.merge.impl.MergeLoggerImpl;
+
+import java.io.*;
 import java.util.*;
 
 public final class Merger {
+    private final List<File> chunks;
+    private final File targetFile;
+    private final int logStep;
 
-    public static <T extends Comparable<T>> void merge(
+    public Merger(List<File> chunks, File targetFile, int logStep) {
+        this.chunks = chunks;
+        this.targetFile = targetFile;
+        this.logStep = logStep;
+    }
+
+    public void merge() throws IOException {
+        System.out.println("Joining " + chunks.size() + " chunks to target file...");
+
+        final List<BufferedReaderChunk> chunkReaders = new ArrayList<>(chunks.size());
+        BufferedWriterTarget targetWriter = null;
+        try {
+            for (File chunk : chunks) {
+                chunkReaders.add(new BufferedReaderChunk(new BufferedReader(new FileReader(chunk))));
+            }
+            targetWriter = new BufferedWriterTarget(new BufferedWriter(new FileWriter(targetFile)));
+            final MergeLoggerImpl logger = new MergeLoggerImpl(logStep);
+
+            try {
+                runMerge(chunkReaders, targetWriter, logger);
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+        } finally {
+            for (BufferedReaderChunk chunkReader : chunkReaders) {
+                chunkReader.getReader().close();
+            }
+            if (targetWriter != null) {
+                targetWriter.getWriter().close();
+            }
+        }
+
+        System.out.println("Deleting chunks...");
+
+        for (File chunk : chunks) {
+            final boolean deleted = chunk.delete();
+            if (!deleted) {
+                System.err.println("Failed to delete chunk " + chunk.getName());
+            }
+        }
+    }
+
+    private static <T extends Comparable<T>> void runMerge(
             Collection<? extends MergeChunk<T>> chunks,
             MergeTarget<T> target,
             MergeLogger logger
